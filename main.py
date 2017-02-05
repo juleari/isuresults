@@ -38,10 +38,29 @@ class Event:
         self.date_start = parser.start
         self.date_end = parser.end
 
-        self.participants = self.get_participants(parser.a_list)
+        links = parser.a_list
+        self.participants = self.get_participants(links)
+        self.shedule = self.get_shedule(links)
 
     def get_participants(self, links):
-        return map( get_category, filter(lambda l: l.id == 'cat', links) )
+        """
+        Gets participants by categories
+        @param {[Link]} links
+        @return {[ISUCategory]}
+        """
+        return map(get_category, [link for link in links if link.id == 'cat'])
+
+    def get_shedule(self, links):
+        """
+        Gets shedule from pdf
+        @param {[Link]} links
+        @return {Schedule}
+        """
+        for link in links:
+            if link.id == 'url' and 'schedules' in link.url:
+                return link
+
+        return Link([])
 
     def count_time(self, local_time):
         """
