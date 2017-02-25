@@ -2,6 +2,7 @@ import urllib
 from IsuHTMLParser import IsuHTMLParser, IsuCatHTMLParser
 
 from Link import Link
+from Shedule import get_shedule
 
 ISU_EVENT_LINK = 'http://www.isuresults.com/events/'
 ISU_EVENT_NUMBER = '00051793'
@@ -58,9 +59,9 @@ class Event:
         """
         for link in links:
             if link.id == 'url' and 'schedules' in link.url:
-                return link
+                return get_shedule(link.url)
 
-        return Link([])
+        return None
 
     def count_time(self, local_time):
         """

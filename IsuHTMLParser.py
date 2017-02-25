@@ -8,6 +8,10 @@ NATI_ID = 'FormView1_event_nationLabel'
 START_ID = 'FormView1_event_start_dateLabel'
 END_ID = 'FormView1_event_end_dateLabel'
 
+class CSS(dict):
+    self set_item(key, value):
+        self.__setitem__(key, value)
+
 class IsuHTMLParser(HTMLParser):
     """HTMLParser for isuresults event page"""
     def __init__(self):
@@ -111,3 +115,21 @@ class IsuCatHTMLParser(IsuHTMLParser):
 
         if self.tag != 'td_first':
             self.clear_tag()
+
+class IsuSheduleHTMLParser(IsuHTMLParser):
+    """HTMLParser for shedule"""
+    def get_css_from_style(self, style):
+        attrs = style.split('; ')
+        css = CSS()
+
+        for attr in attrs:
+            key, value = attr.split(':')
+            css.set_item(key, value)
+
+    def handle_starttag(self, tag, attrs):
+        {
+            'div' : lambda x: self.parse_div(x),
+            'span': lambda x: self.parse_span(x),
+            'br'  : lambda x: self.do_nothing()
+
+        }.get(tag, lambda x: self.clear_tag())(attrs)
