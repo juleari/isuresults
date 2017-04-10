@@ -29,19 +29,40 @@ class ISUCategory:
         return '%s - %s' % (self.name, str.join(', ', map(repr, self.entries)))
 
 class Event:
-    '''ISU event information'''
+    '''
+    ISU event information
+    @url {string} -- url at isuresults
+    @name {string}
+    @group {string} -- name of group of competitions
+
+    Place
+    @city {string}
+    @nati {string} -- country code
+
+    Date
+    @date_start
+    @date_end
+    @season {(int, int)} -- years of season
+    @shedule {Shedule}
+
+    People
+    @participants {[ISUCategory]} -- lists of participants by categories
+    '''
     def __init__(self, url, parser):
         self.url = url
         self.name = parser.name
+        # self.group
+
         self.city = parser.city
         self.nati = parser.nati
 
         self.date_start = parser.start
         self.date_end = parser.end
+        # self.season = self.calc_season()
+        # self.shedule = self.get_shedule(links)
 
         links = parser.a_list
         self.participants = self.get_participants(links)
-        self.shedule = self.get_shedule(links)
 
     def get_participants(self, links):
         """

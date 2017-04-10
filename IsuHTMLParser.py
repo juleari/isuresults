@@ -9,7 +9,7 @@ START_ID = 'FormView1_event_start_dateLabel'
 END_ID = 'FormView1_event_end_dateLabel'
 
 class CSS(dict):
-    self set_item(key, value):
+    def set_item(self, key, value):
         self.__setitem__(key, value)
 
 class IsuHTMLParser(HTMLParser):
@@ -78,6 +78,10 @@ class IsuHTMLParser(HTMLParser):
 
 class IsuCatHTMLParser(IsuHTMLParser):
     """HTMLParser for isuresults category page"""
+    def __init__(self):
+        self.is_final = False
+        IsuHTMLParser.__init__(self)
+
     def parse_a(self, attrs):
         self.tag = 'a'
         self.elem = PersonalLink(attrs, self.has_number)
@@ -87,15 +91,20 @@ class IsuCatHTMLParser(IsuHTMLParser):
             if attr[0] == 'class' and attr[1] == 'first':
                 self.tag = 'td_first'
 
+    def parse_span(self, attrs):
+        for attr in attrs:
+            if attr[0] == 'id' and attr[1] == 'Label_EntryResultList':
+                self.is_final = True
+
     def clear_tag(self):
         IsuHTMLParser.clear_tag(self)
-        self.has_number = False
+        self.has_number = self.is_final
 
     def handle_starttag(self, tag, attrs):
         {
             'a' : lambda x: self.parse_a(x),
             'td': lambda x: self.parse_td(x),
-
+            'span': lambda x: self.parse_span(x),
         }.get(tag, lambda x: self.clear_tag())(attrs)
 
     def handle_data(self, data):
@@ -125,6 +134,12 @@ class IsuSheduleHTMLParser(IsuHTMLParser):
         for attr in attrs:
             key, value = attr.split(':')
             css.set_item(key, value)
+
+    def parse_div(self, attrs):
+        return ''
+        # for attr in attrs:
+        #     if attr[0] == 'style':
+        #         self.
 
     def handle_starttag(self, tag, attrs):
         {
